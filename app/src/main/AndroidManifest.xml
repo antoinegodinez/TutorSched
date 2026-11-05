@@ -13,9 +13,9 @@
         android:theme="@style/Theme.TutorSched"
         tools:targetApi="31">
 
-        <!-- Main Dashboard Activity -->
+        <!-- entry point activity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +23,16 @@
             </intent-filter>
         </activity>
 
-        <!-- ADD THIS LINE FOR BOOKING ACTIVITY -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
         <activity
             android:name=".BookingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyBookingsActivity"
             android:exported="false" />
 
     </application>

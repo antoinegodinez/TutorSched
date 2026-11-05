@@ -25,9 +25,10 @@ class TutorAdapter(private val context: Context, private val tutorList: List<Tut
 
     override fun onBindViewHolder(holder: TutorViewHolder, position: Int) {
         val tutor = tutorList[position]
-        holder.tvName.text = "Tutor: ${tutor.name}"
-        holder.tvSubjects.text = "Subjects: ${tutor.subjects}"
+        holder.tvName.text = tutor.name
+        holder.tvSubjects.text = tutor.subjects
 
+        // pass tutor name to booking activity when clicked
         holder.btnBook.setOnClickListener {
             val intent = Intent(context, BookingActivity::class.java).apply {
                 putExtra("EXTRA_TUTOR_NAME", tutor.name)

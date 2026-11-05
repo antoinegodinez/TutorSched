@@ -15,17 +15,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize the RecyclerView from activity_main.xml
         recyclerView = findViewById(R.id.recyclerViewTutors)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Populate local sample mock data matching project requirements
+        // sample list data to test the UI recycler view
         tutorList = listOf(
-            Tutor("Alex", "Programming, CS101", "Available"),
-            Tutor("Jamie", "Database, SQL", "Available")
+            Tutor("Alex Smith", "Programming, CS101", "Available"),
+            Tutor("Jamie Reyes", "Database, SQL", "Available"),
+            Tutor("Chris Morales", "Data Structures", "Available")
         )
 
-        // Bind the adapter to the RecyclerView
         tutorAdapter = TutorAdapter(this, tutorList)
         recyclerView.adapter = tutorAdapter
     }
