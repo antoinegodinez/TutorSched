@@ -3,20 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Available Tutors"
-        android:textSize="20sp"
+        android:text="TutorSched Dashboard"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
+        android:textColor="#3F51B5"
+        android:layout_marginBottom="16dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerTutors"
+        android:id="@+id/recyclerViewTutors"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical" />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

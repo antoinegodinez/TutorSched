@@ -1,35 +1,32 @@
 package com.example.tutorsched
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tutorsched.adapters.TutorAdapter
-import com.example.tutorsched.models.Tutor
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var tutorAdapter: TutorAdapter
+    private lateinit var tutorList: List<Tutor>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Mock data matching your Phase 1 wireframes
-        val mockTutors = listOf(
-            Tutor("1", "Alex", "Programming"),
-            Tutor("2", "Jamie", "Database")
-        )
-
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerTutors)
+        // Initialize the RecyclerView from activity_main.xml
+        recyclerView = findViewById(R.id.recyclerViewTutors)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        recyclerView.adapter = TutorAdapter(mockTutors) { selectedTutor ->
-            // Action to pass data to the booking screen next
-            val intent = Intent(this, BookingActivity::class.java).apply {
-                putExtra("EXTRA_TUTOR_NAME", selectedTutor.name)
-                putExtra("EXTRA_SUBJECT", selectedTutor.subject)
-            }
-            startActivity(intent)
-        }
+        // Populate local sample mock data matching project requirements
+        tutorList = listOf(
+            Tutor("Alex", "Programming, CS101", "Available"),
+            Tutor("Jamie", "Database, SQL", "Available")
+        )
+
+        // Bind the adapter to the RecyclerView
+        tutorAdapter = TutorAdapter(this, tutorList)
+        recyclerView.adapter = tutorAdapter
     }
 }

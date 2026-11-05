@@ -1,7 +1,7 @@
-package com.example.tutorsched.models
+package com.example.tutorsched
 
 data class Tutor(
-    val id: String,
     val name: String,
-    val subject: String
+    val subjects: String,
+    val availability: String
 )

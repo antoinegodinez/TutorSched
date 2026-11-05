@@ -1,38 +1,39 @@
-package com.example.tutorsched.adapters
+package com.example.tutorsched
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tutorsched.R
-import com.example.tutorsched.models.Tutor
 
-class TutorAdapter(
-    private val tutorList: List<Tutor>,
-    private val onBookClick: (Tutor) -> Unit
-) : RecyclerView.Adapter<TutorAdapter.TutorViewHolder>() {
+class TutorAdapter(private val context: Context, private val tutorList: List<Tutor>) :
+    RecyclerView.Adapter<TutorAdapter.TutorViewHolder>() {
 
     class TutorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nameText: TextView = itemView.findViewById(R.id.textTutorName)
-        val subjectText: TextView = itemView.findViewById(R.id.textTutorSubject)
-        val bookButton: Button = itemView.findViewById(R.id.btnViewBook)
+        val tvName: TextView = itemView.findViewById(R.id.tvTutorName)
+        val tvSubjects: TextView = itemView.findViewById(R.id.tvTutorSubjects)
+        val btnBook: Button = itemView.findViewById(R.id.btnBookTutor)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TutorViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_tutor, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.item_tutor, parent, false)
         return TutorViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: TutorViewHolder, position: Int) {
         val tutor = tutorList[position]
-        holder.nameText.text = "Tutor: ${tutor.name}"
-        holder.subjectText.text = "Subjects: ${tutor.subject}"
+        holder.tvName.text = "Tutor: ${tutor.name}"
+        holder.tvSubjects.text = "Subjects: ${tutor.subjects}"
 
-        holder.bookButton.setOnClickListener {
-            onBookClick(tutor)
+        holder.btnBook.setOnClickListener {
+            val intent = Intent(context, BookingActivity::class.java).apply {
+                putExtra("EXTRA_TUTOR_NAME", tutor.name)
+                putExtra("EXTRA_TUTOR_SUBJECTS", tutor.subjects)
+            }
+            context.startActivity(intent)
         }
     }
 
