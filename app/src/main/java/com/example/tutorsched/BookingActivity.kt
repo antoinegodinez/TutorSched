@@ -2,6 +2,7 @@ package com.example.tutorsched
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -22,11 +23,11 @@ class BookingActivity : AppCompatActivity() {
         val etEnd = findViewById<EditText>(R.id.etEndTime)
         val btnSubmit = findViewById<Button>(R.id.btnSubmitBooking)
 
-        // get the tutor name passed from the previous activity
+        // Get the tutor name passed from the previous activity
         val tutorName = intent.getStringExtra("EXTRA_TUTOR_NAME") ?: "Tutor"
         tvTitle.text = "Book Session with $tutorName"
 
-        // make date field open a calendar picker dialog
+        // Date picker dialog logic
         etDate.isFocusable = false
         etDate.isClickable = true
         etDate.setOnClickListener {
@@ -42,7 +43,7 @@ class BookingActivity : AppCompatActivity() {
             }, year, month, day).show()
         }
 
-        // make start time field open a time picker dialog
+        // Start time picker dialog logic
         etStart.isFocusable = false
         etStart.isClickable = true
         etStart.setOnClickListener {
@@ -51,12 +52,11 @@ class BookingActivity : AppCompatActivity() {
             val minute = calendar.get(Calendar.MINUTE)
 
             TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-                val formattedTime = formatTime(selectedHour, selectedMinute)
-                etStart.setText(formattedTime)
-            }, hour, minute, false).show() // false for 12-hour AM/PM format
+                etStart.setText(formatTime(selectedHour, selectedMinute))
+            }, hour, minute, false).show()
         }
 
-        // make end time field open a time picker dialog
+        // End time picker dialog logic
         etEnd.isFocusable = false
         etEnd.isClickable = true
         etEnd.setOnClickListener {
@@ -65,11 +65,11 @@ class BookingActivity : AppCompatActivity() {
             val minute = calendar.get(Calendar.MINUTE)
 
             TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-                val formattedTime = formatTime(selectedHour, selectedMinute)
-                etEnd.setText(formattedTime)
+                etEnd.setText(formatTime(selectedHour, selectedMinute))
             }, hour, minute, false).show()
         }
 
+        // Submit logic with direct navigation to MyBookingsActivity
         btnSubmit.setOnClickListener {
             val dateStr = etDate.text.toString().trim()
             val startStr = etStart.text.toString().trim()
@@ -77,14 +77,18 @@ class BookingActivity : AppCompatActivity() {
 
             if (dateStr.isNotEmpty() && startStr.isNotEmpty() && endStr.isNotEmpty()) {
                 Toast.makeText(this, "Booking submitted successfully!", Toast.LENGTH_SHORT).show()
-                finish()
+
+                // Navigate directly to MyBookingsActivity
+                val intent = Intent(this, MyBookingsActivity::class.java)
+                startActivity(intent)
+                finish() // Close the booking screen
             } else {
                 Toast.makeText(this, "Please fill in all date and time fields", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // helper function to format 24-hour time into 12-hour AM/PM format
+    // Helper function to format 24-hour time into 12-hour AM/PM format
     private fun formatTime(hour: Int, minute: Int): String {
         val amPm = if (hour < 12) "AM" else "PM"
         val formattedHour = when {

@@ -13,6 +13,16 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#3F51B5"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Button to access MyBookingsActivity directly from the dashboard -->
+    <Button
+        android:id="@+id/btnViewMyBookings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View My Bookings"
+        android:backgroundTint="#3F51B5"
+        android:textColor="#FFFFFF"
         android:layout_marginBottom="16dp"/>
 
     <androidx.recyclerview.widget.RecyclerView

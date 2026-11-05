@@ -1,6 +1,8 @@
 package com.example.tutorsched
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,10 +17,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerViewTutors)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // sample list data to test the UI recycler view
+        // Find the "View My Bookings" button and set its click listener
+        val btnMyBookings = findViewById<Button>(R.id.btnViewMyBookings)
+        btnMyBookings.setOnClickListener {
+            val intent = Intent(this, MyBookingsActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Sample mock data for tutors
         tutorList = listOf(
             Tutor("Alex Smith", "Programming, CS101", "Available"),
             Tutor("Jamie Reyes", "Database, SQL", "Available"),

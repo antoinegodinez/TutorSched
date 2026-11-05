@@ -15,15 +15,31 @@ class MyBookingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_bookings)
 
-        recyclerView = findViewById(R.id.recyclerViewBookings)
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.recyclerViewMyBookings)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // mock data to test booking status list
+        // Sample local mock data to display learner bookings for Phase 1
         bookingList = listOf(
-            Booking("Alex Smith", "Programming", "2026-10-30", "10:00 AM", "11:00 AM", "Pending"),
-            Booking("Jamie Reyes", "Database", "2026-10-31", "01:00 PM", "02:00 PM", "Confirmed")
+            Booking(
+                tutorName = "Alex Smith",
+                subject = "Programming, CS101",
+                date = "2026-11-10",
+                startTime = "10:00 AM",
+                endTime = "11:00 AM",
+                status = "Pending"
+            ),
+            Booking(
+                tutorName = "Jamie Reyes",
+                subject = "Database, SQL",
+                date = "2026-11-12",
+                startTime = "01:00 PM",
+                endTime = "02:00 PM",
+                status = "Confirmed"
+            )
         )
 
+        // Set up the adapter with the mock list
         bookingAdapter = BookingAdapter(this, bookingList)
         recyclerView.adapter = bookingAdapter
     }
