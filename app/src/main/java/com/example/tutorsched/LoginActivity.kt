@@ -55,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
 
         Log.d(TAG, "Attempting Firebase authentication for: $email")
 
-        // Attempt sign-in
+        // Step 1: Always try signing in first to prevent "account already in use" errors
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -65,7 +65,8 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 } else {
                     Log.d(TAG, "Sign-in failed, attempting automatic account creation...", task.exception)
-                    // Auto-register for convenience if account doesn't exist yet
+
+                    // Step 2: If sign-in fails, create a new account for quick testing if it doesn't exist yet
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { createTask ->
                             if (createTask.isSuccessful) {

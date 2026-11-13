@@ -7,17 +7,27 @@
     android:background="#FFFFFF">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Coordinator Dashboard (All Bookings)"
-        android:textSize="20sp"
+        android:text="Coordinator System Oversight"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#3F51B5"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Make sure this ID matches exactly -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCoordinator"
+        android:id="@+id/recyclerViewCoordinatorLogs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log Out"
+        android:backgroundTint="#E53935"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"/>
 
 </LinearLayout>

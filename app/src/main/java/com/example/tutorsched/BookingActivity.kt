@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -22,7 +23,6 @@ class BookingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_booking)
 
-        // Initialize Firestore and Auth
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
@@ -32,63 +32,46 @@ class BookingActivity : AppCompatActivity() {
         val etEnd = findViewById<EditText>(R.id.etEndTime)
         val btnSubmit = findViewById<Button>(R.id.btnSubmitBooking)
 
-        // Get the tutor name passed from the previous activity
         val tutorName = intent.getStringExtra("EXTRA_TUTOR_NAME") ?: "Tutor"
-        val tutorSubject = intent.getStringExtra("EXTRA_TUTOR_SUBJECT") ?: "Programming"
+        val tutorSubject = intent.getStringExtra("EXTRA_TUTOR_SUBJECT") ?: "General Programming"
         tvTitle.text = "Book Session with $tutorName"
 
-        // Date picker dialog logic
         etDate.isFocusable = false
         etDate.isClickable = true
         etDate.setOnClickListener {
             val calendar = Calendar.getInstance()
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-
             DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
                 val formattedMonth = String.format("%02d", selectedMonth + 1)
                 val formattedDay = String.format("%02d", selectedDay)
                 etDate.setText("$selectedYear-$formattedMonth-$formattedDay")
-            }, year, month, day).show()
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
-        // Start time picker dialog logic
         etStart.isFocusable = false
         etStart.isClickable = true
         etStart.setOnClickListener {
             val calendar = Calendar.getInstance()
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
-
             TimePickerDialog(this, { _, selectedHour, selectedMinute ->
                 etStart.setText(formatTime(selectedHour, selectedMinute))
-            }, hour, minute, false).show()
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
         }
 
-        // End time picker dialog logic
         etEnd.isFocusable = false
         etEnd.isClickable = true
         etEnd.setOnClickListener {
             val calendar = Calendar.getInstance()
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
-
             TimePickerDialog(this, { _, selectedHour, selectedMinute ->
                 etEnd.setText(formatTime(selectedHour, selectedMinute))
-            }, hour, minute, false).show()
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
         }
 
-        // Submit logic with Cloud Firestore Write
         btnSubmit.setOnClickListener {
             val dateStr = etDate.text.toString().trim()
             val startStr = etStart.text.toString().trim()
             val endStr = etEnd.text.toString().trim()
-            val learnerId = auth.currentUser?.uid ?: "test_learner"
+            val learnerId = auth.currentUser?.uid ?: "anonymous_learner"
 
             if (dateStr.isNotEmpty() && startStr.isNotEmpty() && endStr.isNotEmpty()) {
-
-                // Create the booking record map for Firestore
                 val bookingMap = hashMapOf(
                     "learnerId" to learnerId,
                     "tutorName" to tutorName,
@@ -99,28 +82,22 @@ class BookingActivity : AppCompatActivity() {
                     "createdAt" to com.google.firebase.Timestamp.now()
                 )
 
-                // Save to Cloud Firestore 'bookings' collection
                 db.collection("bookings")
                     .add(bookingMap)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Booking saved to Firestore!", Toast.LENGTH_SHORT).show()
-
-                        // Navigate to MyBookingsActivity
-                        val intent = Intent(this, MyBookingsActivity::class.java)
-                        startActivity(intent)
+                        startActivity(Intent(this, MyBookingsActivity::class.java))
                         finish()
                     }
                     .addOnFailureListener { e ->
                         Toast.makeText(this, "Error saving booking: ${e.message}", Toast.LENGTH_LONG).show()
                     }
-
             } else {
                 Toast.makeText(this, "Please fill in all date and time fields", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // Helper function to format 24-hour time into 12-hour AM/PM format
     private fun formatTime(hour: Int, minute: Int): String {
         val amPm = if (hour < 12) "AM" else "PM"
         val formattedHour = when {
@@ -128,7 +105,6 @@ class BookingActivity : AppCompatActivity() {
             hour > 12 -> hour - 12
             else -> hour
         }
-        val formattedMinute = String.format("%02d", minute)
-        return "$formattedHour:$formattedMinute $amPm"
+        return "$formattedHour:${String.format("%02d", minute)} $amPm"
     }
 }
