@@ -2,16 +2,24 @@ package com.example.tutorsched
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+    private val TAG = "LoginActivityDebug"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
@@ -22,44 +30,56 @@ class LoginActivity : AppCompatActivity() {
 
         // 1. Learner Login Routing
         btnLoginLearner.setOnClickListener {
-            if (validateInput(etEmail, etPassword)) {
-                Toast.makeText(this, "Logged in as Learner", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+            handleFirebaseLogin(etEmail, etPassword, MainActivity::class.java, "Learner")
         }
 
         // 2. Tutor Login Routing
         btnLoginTutor.setOnClickListener {
-            if (validateInput(etEmail, etPassword)) {
-                Toast.makeText(this, "Logged in as Tutor", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, TutorScheduleActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+            handleFirebaseLogin(etEmail, etPassword, TutorScheduleActivity::class.java, "Tutor")
         }
 
         // 3. Coordinator Login Routing
         btnLoginCoordinator.setOnClickListener {
-            if (validateInput(etEmail, etPassword)) {
-                Toast.makeText(this, "Logged in as Coordinator", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, CoordinatorDashboardActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+            handleFirebaseLogin(etEmail, etPassword, CoordinatorDashboardActivity::class.java, "Coordinator")
         }
     }
 
-    // Helper validation to ensure text fields aren't completely empty
-    private fun validateInput(etEmail: EditText, etPassword: EditText): Boolean {
+    private fun handleFirebaseLogin(etEmail: EditText, etPassword: EditText, destinationClass: Class<*>, roleName: String) {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-            return false
+            return
         }
-        return true
+
+        Log.d(TAG, "Attempting Firebase authentication for: $email")
+
+        // Attempt sign-in
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Sign-in successful for $roleName")
+                    Toast.makeText(this, "Welcome back, $roleName!", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, destinationClass))
+                    finish()
+                } else {
+                    Log.d(TAG, "Sign-in failed, attempting automatic account creation...", task.exception)
+                    // Auto-register for convenience if account doesn't exist yet
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this) { createTask ->
+                            if (createTask.isSuccessful) {
+                                Log.d(TAG, "Account created successfully for $roleName")
+                                Toast.makeText(this, "Account created & logged in as $roleName!", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, destinationClass))
+                                finish()
+                            } else {
+                                val errorMsg = createTask.exception?.message ?: "Unknown error"
+                                Log.e(TAG, "Authentication/Creation failed: $errorMsg", createTask.exception)
+                                Toast.makeText(this, "Login Failed: $errorMsg", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                }
+            }
     }
 }

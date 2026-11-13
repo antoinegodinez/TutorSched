@@ -9,13 +9,22 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 
 class BookingActivity : AppCompatActivity() {
 
+    private lateinit var db: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_booking)
+
+        // Initialize Firestore and Auth
+        db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         val tvTitle = findViewById<TextView>(R.id.tvSelectedTutor)
         val etDate = findViewById<EditText>(R.id.etBookingDate)
@@ -25,6 +34,7 @@ class BookingActivity : AppCompatActivity() {
 
         // Get the tutor name passed from the previous activity
         val tutorName = intent.getStringExtra("EXTRA_TUTOR_NAME") ?: "Tutor"
+        val tutorSubject = intent.getStringExtra("EXTRA_TUTOR_SUBJECT") ?: "Programming"
         tvTitle.text = "Book Session with $tutorName"
 
         // Date picker dialog logic
@@ -69,19 +79,41 @@ class BookingActivity : AppCompatActivity() {
             }, hour, minute, false).show()
         }
 
-        // Submit logic with direct navigation to MyBookingsActivity
+        // Submit logic with Cloud Firestore Write
         btnSubmit.setOnClickListener {
             val dateStr = etDate.text.toString().trim()
             val startStr = etStart.text.toString().trim()
             val endStr = etEnd.text.toString().trim()
+            val learnerId = auth.currentUser?.uid ?: "test_learner"
 
             if (dateStr.isNotEmpty() && startStr.isNotEmpty() && endStr.isNotEmpty()) {
-                Toast.makeText(this, "Booking submitted successfully!", Toast.LENGTH_SHORT).show()
 
-                // Navigate directly to MyBookingsActivity
-                val intent = Intent(this, MyBookingsActivity::class.java)
-                startActivity(intent)
-                finish() // Close the booking screen
+                // Create the booking record map for Firestore
+                val bookingMap = hashMapOf(
+                    "learnerId" to learnerId,
+                    "tutorName" to tutorName,
+                    "subject" to tutorSubject,
+                    "sessionDate" to dateStr,
+                    "timeSlot" to "$startStr - $endStr",
+                    "status" to "Pending",
+                    "createdAt" to com.google.firebase.Timestamp.now()
+                )
+
+                // Save to Cloud Firestore 'bookings' collection
+                db.collection("bookings")
+                    .add(bookingMap)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Booking saved to Firestore!", Toast.LENGTH_SHORT).show()
+
+                        // Navigate to MyBookingsActivity
+                        val intent = Intent(this, MyBookingsActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Error saving booking: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+
             } else {
                 Toast.makeText(this, "Please fill in all date and time fields", Toast.LENGTH_SHORT).show()
             }

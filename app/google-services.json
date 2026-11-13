@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "834057681206",
+    "project_id": "tutorsched-e2c07",
+    "storage_bucket": "tutorsched-e2c07.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834057681206:android:852657e3f228ec89159b97",
+        "android_client_info": {
+          "package_name": "com.example.tutorsched"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0YH8Z_7BiKYbUU0E4f1kyqRgmVDZxfIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
