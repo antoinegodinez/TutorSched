@@ -27,10 +27,10 @@
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email address"
+        android:hint="Email Address"
         android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:minHeight="48dp"
+        android:layout_marginBottom="12dp"/>
 
     <EditText
         android:id="@+id/etPassword"
@@ -38,16 +38,34 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
-        android:padding="12dp"
+        android:minHeight="48dp"
         android:layout_marginBottom="24dp"/>
 
+    <!-- Role-specific login buttons for easy demonstration -->
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnLoginLearner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Login as Learner"
         android:backgroundTint="#3F51B5"
         android:textColor="#FFFFFF"
-        android:padding="12dp"/>
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnLoginTutor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login as Tutor"
+        android:backgroundTint="#3F51B5"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnLoginCoordinator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login as Coordinator"
+        android:backgroundTint="#3F51B5"
+        android:textColor="#FFFFFF"/>
 
 </LinearLayout>
