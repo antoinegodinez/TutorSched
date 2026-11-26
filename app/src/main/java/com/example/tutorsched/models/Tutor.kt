@@ -1,4 +1,4 @@
-package com.example.tutorsched
+package com.example.tutorsched.models
 
 // Holds info for each tutor shown on the main dashboard
 data class Tutor(

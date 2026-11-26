@@ -6,6 +6,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tutorsched.adapters.TutorAdapter
+import com.example.tutorsched.models.Tutor
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -13,7 +15,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var recyclerViewTutors: RecyclerView
     private lateinit var tutorAdapter: TutorAdapter
-    private val tutorList = mutableListOf<Tutor>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,31 +22,30 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        val btnMyBookings = findViewById<Button>(R.id.btnMyBookings)
+        val btnViewMyBookings = findViewById<Button>(R.id.btnViewMyBookings)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         recyclerViewTutors = findViewById(R.id.recyclerViewTutors)
-
         recyclerViewTutors.layoutManager = LinearLayoutManager(this)
 
-        // Populate sample available tutors
-        tutorList.add(Tutor("Alex Smith", "Programming, CS101", "Available"))
-        tutorList.add(Tutor("Jamie Johnson", "Database Systems", "Available"))
-        tutorList.add(Tutor("Sam Wilson", "Data Structures & Algorithms", "Available"))
+        // Match this constructor to your Tutor data class properties
+        val tutorList = listOf(
+            Tutor("1", "Alex Smith", "Programming, CS101"),
+            Tutor("2", "Jamie Reyes", "Database, SQL"),
+            Tutor("3", "Chris Morales", "Data Structures")
+        )
 
         tutorAdapter = TutorAdapter(this, tutorList)
         recyclerViewTutors.adapter = tutorAdapter
 
-        // Navigate to My Bookings screen
-        btnMyBookings?.setOnClickListener {
-            val intent = Intent(this, MyBookingsActivity::class.java)
-            startActivity(intent)
+        btnViewMyBookings.setOnClickListener {
+            startActivity(Intent(this, MyBookingsActivity::class.java))
         }
 
-        // Secure Logout functionality
-        btnLogout?.setOnClickListener {
+        btnLogout.setOnClickListener {
             auth.signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val intent = Intent(this, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
             startActivity(intent)
             finish()
         }

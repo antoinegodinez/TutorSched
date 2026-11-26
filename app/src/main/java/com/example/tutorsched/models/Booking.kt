@@ -1,4 +1,4 @@
-package com.example.tutorsched
+package com.example.tutorsched.models
 
 // Structure for a tutorial booking request
 data class Booking(

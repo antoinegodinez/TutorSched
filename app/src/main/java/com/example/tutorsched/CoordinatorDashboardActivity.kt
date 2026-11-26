@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tutorsched.adapters.BookingAdapter
+import com.example.tutorsched.models.Booking
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -28,14 +30,15 @@ class CoordinatorDashboardActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerViewCoordinatorLogs)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        bookingAdapter = BookingAdapter(this, systemLogs)
+        bookingAdapter = BookingAdapter(systemLogs)
         recyclerView.adapter = bookingAdapter
 
         val btnLogout = findViewById<Button>(R.id.btnLogout)
-        btnLogout?.setOnClickListener {
+        btnLogout.setOnClickListener {
             auth.signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val intent = Intent(this, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
             startActivity(intent)
             finish()
         }
@@ -55,15 +58,16 @@ class CoordinatorDashboardActivity : AppCompatActivity() {
                     val time = document.getString("timeSlot") ?: ""
                     val status = document.getString("status") ?: "Pending"
 
-                    val booking = Booking(
-                        tutorName = "Tutor: $tutorName",
-                        subject = subject,
-                        date = date,
-                        startTime = time,
-                        endTime = "",
-                        status = status
+                    systemLogs.add(
+                        Booking(
+                            tutorName = "Tutor: $tutorName",
+                            subject = subject,
+                            date = date,
+                            startTime = time,
+                            endTime = "",
+                            status = status
+                        )
                     )
-                    systemLogs.add(booking)
                 }
                 bookingAdapter.notifyDataSetChanged()
             }

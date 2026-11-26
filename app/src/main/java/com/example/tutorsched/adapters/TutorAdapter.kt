@@ -1,4 +1,4 @@
-package com.example.tutorsched
+package com.example.tutorsched.adapters
 
 import android.content.Context
 import android.content.Intent
@@ -8,9 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tutorsched.BookingActivity
+import com.example.tutorsched.R
+import com.example.tutorsched.models.Tutor
 
-class TutorAdapter(private val context: Context, private val tutorList: List<Tutor>) :
-    RecyclerView.Adapter<TutorAdapter.TutorViewHolder>() {
+class TutorAdapter(
+    private val context: Context,
+    private val tutorList: List<Tutor>
+) : RecyclerView.Adapter<TutorAdapter.TutorViewHolder>() {
 
     class TutorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvTutorName)
@@ -28,7 +33,6 @@ class TutorAdapter(private val context: Context, private val tutorList: List<Tut
         holder.tvName.text = tutor.name
         holder.tvSubjects.text = tutor.subjects
 
-        // pass tutor name to booking activity when clicked
         holder.btnBook.setOnClickListener {
             val intent = Intent(context, BookingActivity::class.java).apply {
                 putExtra("EXTRA_TUTOR_NAME", tutor.name)

@@ -44,7 +44,12 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleFirebaseLogin(etEmail: EditText, etPassword: EditText, destinationClass: Class<*>, roleName: String) {
+    private fun handleFirebaseLogin(
+        etEmail: EditText,
+        etPassword: EditText,
+        destinationClass: Class<*>,
+        roleName: String
+    ) {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
@@ -53,9 +58,8 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        Log.d(TAG, "Attempting Firebase authentication for: $email")
+        Log.d(TAG, "Attempting sign-in for: $email")
 
-        // Step 1: Always try signing in first to prevent "account already in use" errors
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -64,20 +68,31 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(Intent(this, destinationClass))
                     finish()
                 } else {
-                    Log.d(TAG, "Sign-in failed, attempting automatic account creation...", task.exception)
+                    val signInError = task.exception?.localizedMessage ?: "Sign-in failed"
+                    Log.w(TAG, "Sign-in failed: $signInError", task.exception)
 
-                    // Step 2: If sign-in fails, create a new account for quick testing if it doesn't exist yet
+                    // Only try creating a user if the email is not already registered
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { createTask ->
                             if (createTask.isSuccessful) {
-                                Log.d(TAG, "Account created successfully for $roleName")
-                                Toast.makeText(this, "Account created & logged in as $roleName!", Toast.LENGTH_SHORT).show()
+                                Log.d(TAG, "Account created for $roleName")
+                                Toast.makeText(
+                                    this,
+                                    "Account created & logged in as $roleName!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 startActivity(Intent(this, destinationClass))
                                 finish()
                             } else {
-                                val errorMsg = createTask.exception?.message ?: "Unknown error"
-                                Log.e(TAG, "Authentication/Creation failed: $errorMsg", createTask.exception)
-                                Toast.makeText(this, "Login Failed: $errorMsg", Toast.LENGTH_LONG).show()
+                                val message = if (
+                                    createTask.exception?.message?.contains("already in use", ignoreCase = true) == true
+                                ) {
+                                    "Account already exists—check your password ($signInError)"
+                                } else {
+                                    createTask.exception?.localizedMessage ?: signInError
+                                }
+                                Log.e(TAG, "Auth error: $message", createTask.exception)
+                                Toast.makeText(this, "Login Failed: $message", Toast.LENGTH_LONG).show()
                             }
                         }
                 }
