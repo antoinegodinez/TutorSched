@@ -2,100 +2,134 @@ package com.example.tutorsched
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private val TAG = "LoginActivityDebug"
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
+        val etFullName = findViewById<EditText>(R.id.etFullName)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
+        val rgRole = findViewById<RadioGroup>(R.id.rgRole)
+        val btnSignIn = findViewById<Button>(R.id.btnSignIn)
+        val btnRegister = findViewById<Button>(R.id.btnRegister)
 
-        val btnLoginLearner = findViewById<Button>(R.id.btnLoginLearner)
-        val btnLoginTutor = findViewById<Button>(R.id.btnLoginTutor)
-        val btnLoginCoordinator = findViewById<Button>(R.id.btnLoginCoordinator)
+        btnSignIn.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+            val selectedRole = getSelectedRole(rgRole)
 
-        // 1. Learner Login Routing
-        btnLoginLearner.setOnClickListener {
-            handleFirebaseLogin(etEmail, etPassword, MainActivity::class.java, "Learner")
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter both email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            btnSignIn.isEnabled = false
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    btnSignIn.isEnabled = true
+                    if (task.isSuccessful) {
+                        val uid = auth.currentUser?.uid
+                        val typedName = etFullName.text.toString().trim()
+                        if (uid != null && typedName.isNotEmpty()) {
+                            db.collection("users").document(uid)
+                                .set(
+                                    mapOf(
+                                        "fullName" to typedName,
+                                        "email" to email,
+                                        "role" to selectedRole
+                                    ),
+                                    com.google.firebase.firestore.SetOptions.merge()
+                                )
+                        }
+                        openDashboardForRole(selectedRole, typedName.ifEmpty { email.substringBefore("@") })
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Sign-in failed: ${task.exception?.localizedMessage ?: "Check credentials"}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
         }
 
-        // 2. Tutor Login Routing
-        btnLoginTutor.setOnClickListener {
-            handleFirebaseLogin(etEmail, etPassword, TutorScheduleActivity::class.java, "Tutor")
-        }
+        btnRegister.setOnClickListener {
+            val fullName = etFullName.text.toString().trim()
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+            val selectedRole = getSelectedRole(rgRole)
 
-        // 3. Coordinator Login Routing
-        btnLoginCoordinator.setOnClickListener {
-            handleFirebaseLogin(etEmail, etPassword, CoordinatorDashboardActivity::class.java, "Coordinator")
+            if (fullName.isEmpty() || email.isEmpty() || password.length < 6) {
+                Toast.makeText(
+                    this,
+                    "Enter your name, email, and a password (at least 6 characters)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            btnRegister.isEnabled = false
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    btnRegister.isEnabled = true
+                    if (task.isSuccessful) {
+                        val uid = auth.currentUser?.uid.orEmpty()
+                        val userDoc = hashMapOf(
+                            "uid" to uid,
+                            "fullName" to fullName,
+                            "email" to email,
+                            "role" to selectedRole
+                        )
+                        if (uid.isNotEmpty()) {
+                            db.collection("users").document(uid).set(userDoc)
+                        }
+                        Toast.makeText(this, "Account created as $selectedRole!", Toast.LENGTH_SHORT).show()
+                        openDashboardForRole(selectedRole, fullName)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Registration failed: ${task.exception?.localizedMessage ?: "Try again"}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
         }
     }
 
-    private fun handleFirebaseLogin(
-        etEmail: EditText,
-        etPassword: EditText,
-        destinationClass: Class<*>,
-        roleName: String
-    ) {
-        val email = etEmail.text.toString().trim()
-        val password = etPassword.text.toString().trim()
-
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-            return
+    private fun getSelectedRole(rgRole: RadioGroup): String {
+        return when (rgRole.checkedRadioButtonId) {
+            R.id.rbTutor -> "TUTOR"
+            R.id.rbCoordinator -> "COORDINATOR"
+            else -> "LEARNER"
         }
+    }
 
-        Log.d(TAG, "Attempting sign-in for: $email")
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "Sign-in successful for $roleName")
-                    Toast.makeText(this, "Welcome back, $roleName!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, destinationClass))
-                    finish()
-                } else {
-                    val signInError = task.exception?.localizedMessage ?: "Sign-in failed"
-                    Log.w(TAG, "Sign-in failed: $signInError", task.exception)
-
-                    // Only try creating a user if the email is not already registered
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this) { createTask ->
-                            if (createTask.isSuccessful) {
-                                Log.d(TAG, "Account created for $roleName")
-                                Toast.makeText(
-                                    this,
-                                    "Account created & logged in as $roleName!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                startActivity(Intent(this, destinationClass))
-                                finish()
-                            } else {
-                                val message = if (
-                                    createTask.exception?.message?.contains("already in use", ignoreCase = true) == true
-                                ) {
-                                    "Account already exists—check your password ($signInError)"
-                                } else {
-                                    createTask.exception?.localizedMessage ?: signInError
-                                }
-                                Log.e(TAG, "Auth error: $message", createTask.exception)
-                                Toast.makeText(this, "Login Failed: $message", Toast.LENGTH_LONG).show()
-                            }
-                        }
-                }
-            }
+    private fun openDashboardForRole(role: String, displayName: String) {
+        val destination = when (role) {
+            "TUTOR" -> TutorScheduleActivity::class.java
+            "COORDINATOR" -> CoordinatorDashboardActivity::class.java
+            else -> MainActivity::class.java
+        }
+        val intent = Intent(this, destination).apply {
+            putExtra("EXTRA_USER_NAME", displayName)
+            putExtra("EXTRA_USER_ROLE", role)
+        }
+        startActivity(intent)
+        finish()
     }
 }

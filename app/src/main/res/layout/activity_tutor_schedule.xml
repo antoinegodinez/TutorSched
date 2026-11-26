@@ -31,6 +31,27 @@
             android:textColor="#FFFFFF" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvGreeting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hello, Tutor!"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/tvEmptyBookings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No bookings found yet."
+        android:textSize="15sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTutorSchedule"
         android:layout_width="match_parent"

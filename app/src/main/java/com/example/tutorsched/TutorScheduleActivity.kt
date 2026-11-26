@@ -2,7 +2,9 @@ package com.example.tutorsched
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class TutorScheduleActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var tvEmptyBookings: TextView
     private lateinit var bookingAdapter: BookingAdapter
     private val requestList = mutableListOf<Booking>()
     private lateinit var db: FirebaseFirestore
@@ -27,6 +30,12 @@ class TutorScheduleActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
+        val tvGreeting = findViewById<TextView>(R.id.tvGreeting)
+        val initialName = intent.getStringExtra("EXTRA_USER_NAME")?.trim().orEmpty()
+        tvGreeting.text = "Hello, ${initialName.ifEmpty { "Tutor" }}!"
+        loadUserNameFromFirestore(tvGreeting, "Tutor")
+
+        tvEmptyBookings = findViewById(R.id.tvEmptyBookings)
         recyclerView = findViewById(R.id.recyclerViewTutorSchedule)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -44,6 +53,25 @@ class TutorScheduleActivity : AppCompatActivity() {
         }
 
         fetchTutorBookings()
+    }
+
+    private fun loadUserNameFromFirestore(tvGreeting: TextView, defaultLabel: String) {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { doc ->
+                val savedName = doc.getString("fullName")?.trim().orEmpty()
+                if (savedName.isNotEmpty()) {
+                    tvGreeting.text = "Hello, $savedName!"
+                } else if (tvGreeting.text.isNullOrBlank()) {
+                    tvGreeting.text = "Hello, $defaultLabel!"
+                }
+            }
+    }
+
+    private fun updateEmptyState() {
+        val isEmpty = requestList.isEmpty()
+        tvEmptyBookings.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 
     private fun fetchTutorBookings() {
@@ -70,8 +98,10 @@ class TutorScheduleActivity : AppCompatActivity() {
                     )
                 }
                 bookingAdapter.notifyDataSetChanged()
+                updateEmptyState()
             }
             .addOnFailureListener { exception ->
+                updateEmptyState()
                 Toast.makeText(this, "Failed to load tutor schedule: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }

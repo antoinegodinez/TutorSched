@@ -1,71 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
+    android:fillViewport="true"
     android:background="#FFFFFF">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TutorSched"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="#3F51B5"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tutorial Session Scheduler"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="32dp"/>
-
-    <EditText
-        android:id="@+id/etEmail"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email Address"
-        android:inputType="textEmailAddress"
-        android:minHeight="48dp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/etPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:layout_marginBottom="24dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TutorSched"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#3F51B5" />
 
-    <!-- Role-specific login buttons for easy demonstration -->
-    <Button
-        android:id="@+id/btnLoginLearner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login as Learner"
-        android:backgroundTint="#3F51B5"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="8dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tutorial Session Scheduler"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="28dp" />
 
-    <Button
-        android:id="@+id/btnLoginTutor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login as Tutor"
-        android:backgroundTint="#3F51B5"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="8dp"/>
+        <EditText
+            android:id="@+id/etFullName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Full Name (for new accounts)"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:paddingHorizontal="12dp"
+            android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/btnLoginCoordinator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login as Coordinator"
-        android:backgroundTint="#3F51B5"
-        android:textColor="#FFFFFF"/>
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email Address"
+            android:inputType="textEmailAddress"
+            android:minHeight="48dp"
+            android:paddingHorizontal="12dp"
+            android:layout_marginBottom="12dp" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password (6+ characters)"
+            android:inputType="textPassword"
+            android:minHeight="48dp"
+            android:paddingHorizontal="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Role"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="6dp" />
+
+        <RadioGroup
+            android:id="@+id/rgRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <RadioButton
+                android:id="@+id/rbLearner"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Learner" />
+
+            <RadioButton
+                android:id="@+id/rbTutor"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Tutor" />
+
+            <RadioButton
+                android:id="@+id/rbCoordinator"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Coordinator" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign In"
+            android:backgroundTint="#3F51B5"
+            android:textColor="#FFFFFF"
+            android:minHeight="48dp"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create New Account"
+            android:backgroundTint="#5C6BC0"
+            android:textColor="#FFFFFF"
+            android:minHeight="48dp" />
+
+    </LinearLayout>
+</ScrollView>

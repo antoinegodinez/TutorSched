@@ -1,6 +1,8 @@
 package com.example.tutorsched
 
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class MyBookingsActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var tvEmptyBookings: TextView
     private lateinit var bookingAdapter: BookingAdapter
     private val bookingList = mutableListOf<Booking>()
     private lateinit var db: FirebaseFirestore
@@ -20,6 +23,7 @@ class MyBookingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_bookings)
 
+        tvEmptyBookings = findViewById(R.id.tvEmptyBookings)
         recyclerView = findViewById(R.id.recyclerViewMyBookings)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -28,6 +32,12 @@ class MyBookingsActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
         loadBookings()
+    }
+
+    private fun updateEmptyState() {
+        val isEmpty = bookingList.isEmpty()
+        tvEmptyBookings.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 
     private fun loadBookings() {
@@ -54,8 +64,10 @@ class MyBookingsActivity : AppCompatActivity() {
                     )
                 }
                 bookingAdapter.notifyDataSetChanged()
+                updateEmptyState()
             }
             .addOnFailureListener { e ->
+                updateEmptyState()
                 Toast.makeText(this, "Error loading bookings: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
