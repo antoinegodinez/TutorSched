@@ -42,6 +42,18 @@
         android:layout_marginBottom="10dp" />
 
     <TextView
+        android:id="@+id/tvCoordinatorSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total: 0 | Pending: 0 | Confirmed: 0 | Completed: 0"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#3F51B5"
+        android:background="#EEF1FB"
+        android:padding="10dp"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
         android:id="@+id/tvEmptyBookings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

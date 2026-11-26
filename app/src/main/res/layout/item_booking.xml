@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:elevation="4dp"
-    android:padding="16dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,8 +19,8 @@
             android:layout_height="wrap_content"
             android:text="Tutor"
             android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#3F51B5"/>
+            android:textSize="16sp"
+            android:textColor="#333333" />
 
         <TextView
             android:id="@+id/tvBookingSubject"
@@ -27,7 +28,8 @@
             android:layout_height="wrap_content"
             android:text="Subject"
             android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/tvBookingDateTime"
@@ -46,7 +48,75 @@
             android:textStyle="bold"
             android:textSize="14sp"
             android:textColor="#E65100"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:id="@+id/llLearnerActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnCancelBooking"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:backgroundTint="#FB8C00"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnDeleteBooking"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:backgroundTint="#C62828"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/llTutorActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnApproveBooking"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Approve"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="6dp" />
+
+            <Button
+                android:id="@+id/btnDeclineBooking"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Decline"
+                android:backgroundTint="#E53935"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="6dp" />
+
+            <Button
+                android:id="@+id/btnCompleteBooking"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Complete"
+                android:backgroundTint="#1E88E5"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

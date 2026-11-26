@@ -12,10 +12,8 @@ import com.example.tutorsched.BookingActivity
 import com.example.tutorsched.R
 import com.example.tutorsched.models.Tutor
 
-class TutorAdapter(
-    private val context: Context,
-    private val tutorList: List<Tutor>
-) : RecyclerView.Adapter<TutorAdapter.TutorViewHolder>() {
+class TutorAdapter(private val context: Context, private val tutorList: List<Tutor>) :
+    RecyclerView.Adapter<TutorAdapter.TutorViewHolder>() {
 
     class TutorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvTutorName)
@@ -31,10 +29,11 @@ class TutorAdapter(
     override fun onBindViewHolder(holder: TutorViewHolder, position: Int) {
         val tutor = tutorList[position]
         holder.tvName.text = tutor.name
-        holder.tvSubjects.text = tutor.subjects
+        holder.tvSubjects.text = "Subjects: ${tutor.subjects}"
 
         holder.btnBook.setOnClickListener {
             val intent = Intent(context, BookingActivity::class.java).apply {
+                putExtra("EXTRA_TUTOR_ID", tutor.id)
                 putExtra("EXTRA_TUTOR_NAME", tutor.name)
                 putExtra("EXTRA_TUTOR_SUBJECTS", tutor.subjects)
             }
